@@ -1,6 +1,7 @@
 ﻿using HumanAim.CommandSystem;
 using HumanAim.ConsoleSystem;
 using HumanAim.CSGO;
+using HumanAim.CSGO.Structs;
 using HumanAim.MemorySystem;
 using HumanAim.ThreadingSystem;
 using System.Collections.Generic;
@@ -25,20 +26,71 @@ namespace HumanAim
         {
             while(HumanAim.IsAttached)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(1);
                 if (EngineClient.IsInMenu) continue;
-                Console.Clear();
                 EngineClient.ClearCache();
                 BaseClient.ClearCache();
                 BaseClient.Update();
-                foreach(var ply in BaseClient.PlayerList)
-                {
-                    ply.Update();
-                    Console.WriteNotification($"Player with Id: {ply.GetIndex()}");
-                }
+                var localPlayer = BaseClient.LocalPlayer;
+                if (localPlayer == null)
+                    continue;
 
-                Console.WriteNotification($"My localplayer is: {EngineClient.LocalPlayerIndex}");
+                var closestPlayer = GetClosestPlayer();
+                if (closestPlayer == null)
+                    continue;
+
+                var bone = closestPlayer.GetBonesPos(6);
+                var calculatedBone = CalculateAngle(localPlayer.GetPosition(), bone);
+                EngineClient.ViewAngle = calculatedBone;
             }
+        }
+
+        public static Vector3D CalculateAngle(Vector3D src, Vector3D dst, bool usePunch = true)
+        {
+            var localPlayer = BaseClient.LocalPlayer;
+            var delta = new Vector3D { X = (src.X - dst.X), Y = (src.Y - dst.Y), Z = (src.Z - (dst.Z - localPlayer.GetViewOffset())) };
+            var hyp = (float)System.Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
+            var angles = new Vector3D();
+
+            angles = new Vector3D
+            {
+                X = (float)(System.Math.Atan(delta.Z / hyp) * 57.295779513082f),
+                Y = (float)(System.Math.Atan(delta.Y / delta.X) * 57.295779513082f),
+                Z = 0.0f
+            };
+
+            if (usePunch) angles -= localPlayer.GetPunchAngle() * 2.0f;
+
+            if (delta.X >= 0.0) { angles.Y += 180.0f; }
+            return angles;
+        }
+
+        private static BaseEntity GetClosestPlayer()
+        {
+            var fov = CommandHandler.GetParameter("aimbot", "fov").Value.ToInt32();
+            var radius = fov * (1080 / 90);
+            var pointCrosshair = new Vector2D(960, 540);
+
+            BaseEntity result = null;
+            var localPlayer = BaseClient.LocalPlayer;
+            float maxDistance = float.MaxValue;
+
+            foreach(var player in BaseClient.PlayerList)
+            {
+                if (player == localPlayer) continue;
+                if (player.GetTeam() == localPlayer.GetTeam()) continue;
+                if (player.IsDormant()) continue;
+                if (player.GetHealth() < 1) continue;
+
+                var distance = Vector3D.Distance(localPlayer.GetPosition(), player.GetBonesPos(6));
+
+                if(distance < maxDistance)
+                {
+                    maxDistance = distance;
+                    result = player;
+                }
+            }
+            return result;
         }
 
         private static void AttachToGame()
@@ -82,8 +134,10 @@ namespace HumanAim
             Console.WriteLine("\n  NetVars:");
             HumanAim.NetVars = new SortedDictionary<string, int>();
             HumanAim.NetVars.Add("m_aimPunchAngle", NetvarManager.GetOffset("DT_BasePlayer", "m_Local") + NetvarManager.GetOffset("DT_BasePlayer", "m_aimPunchAngle"));
+            HumanAim.NetVars.Add("m_vecOrigin", NetvarManager.GetOffset("DT_BasePlayer", "m_vecOrigin"));
             HumanAim.NetVars.Add("m_iHealth", NetvarManager.GetOffset("DT_BasePlayer", "m_iHealth"));
             HumanAim.NetVars.Add("m_iTeamNum", NetvarManager.GetOffset("DT_BasePlayer", "m_iTeamNum"));
+            HumanAim.NetVars.Add("m_vecViewOffset[2]", NetvarManager.GetOffset("DT_BasePlayer", "m_vecViewOffset[2]"));
             HumanAim.NetVars.Add("m_dwIndex", 0x64);
             HumanAim.NetVars.Add("m_dwBoneMatrix", NetvarManager.GetOffset("DT_BaseAnimating", "m_nForceBone") + 0x1C);
             var m_bDormant = SignatureManager.GetDormantOffset();

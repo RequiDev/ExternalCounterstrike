@@ -79,6 +79,13 @@ namespace HumanAim.CSGO
                     cachedViewAngle = HumanAim.Memory.Read<Vector3D>(ClientState + viewAngle);
                 return cachedViewAngle;
             }
+            set
+            {
+                if (viewAngle == 0)
+                    viewAngle = SignatureManager.GetViewAngle();
+                HumanAim.Memory.Write(ClientState + viewAngle, value);
+
+            }
         }
     }
 }

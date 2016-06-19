@@ -21,8 +21,9 @@ namespace HumanAim.CSGO
                     var entity = HumanAim.Memory.Read<int>(entityAddress);
 
                     if (entity == 0) continue;
-
-                    playerList.Add(new BaseEntity(entity));
+                    var player = new BaseEntity(entity);
+                    player.Update();
+                    playerList.Add(player);
                 }
             }
         }
@@ -44,7 +45,7 @@ namespace HumanAim.CSGO
         {
             get
             {
-                return playerList.FirstOrDefault(player => player.GetIndex() == (EngineClient.LocalPlayerIndex));
+                return playerList.FirstOrDefault(player => player.GetIndex() == (EngineClient.LocalPlayerIndex + 1));
             }
         }
     }

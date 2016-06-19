@@ -23,7 +23,7 @@ namespace HumanAim.CSGO
 
         public void Update()
         {
-            readData = HumanAim.Memory.ReadMemory(address, HumanAim.NetVars.Values.Max()); // Memory.ReadMemory(address, 0x3150);
+            readData = HumanAim.Memory.ReadMemory(address, HumanAim.NetVars.Values.Max() + 12); // Memory.ReadMemory(address, 0x3150);
         }
 
         public int Address
@@ -51,6 +51,24 @@ namespace HumanAim.CSGO
         public int GetIndex()
         {
             return BitConverter.ToInt32(readData, HumanAim.NetVars["m_dwIndex"]);
+        }
+        public Vector3D GetPosition()
+        {
+            byte[] vecData = new byte[12];
+            Buffer.BlockCopy(readData, HumanAim.NetVars["m_vecOrigin"], vecData, 0, 12);
+            return MemorySystem.MemoryScanner.GetStructure<Vector3D>(vecData);
+        }
+
+        public Vector3D GetPunchAngle()
+        {
+            byte[] vecData = new byte[12];
+            Buffer.BlockCopy(readData, HumanAim.NetVars["m_aimPunchAngle"], vecData, 0, 12);
+            return MemorySystem.MemoryScanner.GetStructure<Vector3D>(vecData);
+        }
+
+        public float GetViewOffset()
+        {
+            return BitConverter.ToSingle(readData, HumanAim.NetVars["m_vecViewOffset[2]"]);
         }
 
         public bool IsDormant()

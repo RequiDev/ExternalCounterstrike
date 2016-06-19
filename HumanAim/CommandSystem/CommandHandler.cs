@@ -86,7 +86,7 @@ namespace HumanAim.CommandSystem
             return Commands.FirstOrDefault(com => com.Name == command);
 
         }
-        private static CommandParameter GetParameter(string command, string parameter)
+        public static CommandParameter GetParameter(string command, string parameter)
         {
             return GetCommand(command).Parameters.FirstOrDefault(param => param.Name == parameter);
         }

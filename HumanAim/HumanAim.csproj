@@ -57,6 +57,7 @@
     <Compile Include="CSGO\EngineClient.cs" />
     <Compile Include="CSGO\Enum\Team.cs" />
     <Compile Include="CSGO\Structs\BaseBone.cs" />
+    <Compile Include="CSGO\Structs\Vector2D.cs" />
     <Compile Include="CSGO\Structs\Vector3D.cs" />
     <Compile Include="HumanAim.cs" />
     <Compile Include="MemorySystem\MemoryScanner.cs" />
