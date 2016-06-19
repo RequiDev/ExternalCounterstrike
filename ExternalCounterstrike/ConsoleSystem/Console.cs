@@ -3,31 +3,10 @@
     internal class Console
     {
         #region VARIABLES
-        private static string _commandLine = ">" + System.Environment.UserName + ": ";
-        public static string CommandLine
-        {
-            get
-            {
-                return _commandLine;
-            }
-            set
-            {
-                _commandLine = value;
-            }
-        }
+        private static string CommandLine { get; } = ">" + System.Environment.UserName + ": ";
 
-        private static string _waterMark = "ExternalCounterstrike v0.1 by Requi";
-        public static string WaterMark
-        {
-            get
-            {
-                return _waterMark;
-            }
-            set
-            {
-                _waterMark = value;
-            }
-        }
+        public static string WaterMark { get; } = "ExternalCounterstrike v0.1 by Requi";
+
         #endregion
 
         #region PROPERTIES
