@@ -69,7 +69,7 @@ namespace ExternalCounterstrike.CSGO
         public Vector3D GetViewOffset()
         {
             byte[] vecData = new byte[12];
-            Buffer.BlockCopy(readData, ExternalCounterstrike.NetVars["m_vecViewOffset[0]"], vecData, 0, 12);
+            Buffer.BlockCopy(readData, ExternalCounterstrike.NetVars["m_vecViewOffset"], vecData, 0, 12);
             return MemorySystem.MemoryScanner.GetStructure<Vector3D>(vecData);
         }
 

@@ -130,7 +130,7 @@ namespace ExternalCounterstrike
             Console.WriteSuccess("  \tengine.dll | 0x" + ExternalCounterstrike.EngineDll.BaseAddress.ToString("X").PadLeft(8, '0') + "\t|  " + Utils.ByteSizeToString(ExternalCounterstrike.EngineDll.ModuleMemorySize));
 
             Console.WriteLine("\n  Offsets:");
-            Console.WriteOffset("DT_BaseEntity", 888888);
+            Console.WriteOffset("EntityBase", 0x04A4BA64);
 
             Console.WriteLine("\n  NetVars:");
             ExternalCounterstrike.NetVars = new SortedDictionary<string, int>();
@@ -138,7 +138,7 @@ namespace ExternalCounterstrike
             ExternalCounterstrike.NetVars.Add("m_vecOrigin", NetvarManager.GetOffset("DT_BasePlayer", "m_vecOrigin"));
             ExternalCounterstrike.NetVars.Add("m_iHealth", NetvarManager.GetOffset("DT_BasePlayer", "m_iHealth"));
             ExternalCounterstrike.NetVars.Add("m_iTeamNum", NetvarManager.GetOffset("DT_BasePlayer", "m_iTeamNum"));
-            ExternalCounterstrike.NetVars.Add("m_vecViewOffset[0]", NetvarManager.GetOffset("DT_BasePlayer", "m_vecViewOffset[0]"));
+            ExternalCounterstrike.NetVars.Add("m_vecViewOffset", NetvarManager.GetOffset("DT_BasePlayer", "m_vecViewOffset[0]"));
             ExternalCounterstrike.NetVars.Add("m_dwIndex", 0x64);
             ExternalCounterstrike.NetVars.Add("m_dwBoneMatrix", NetvarManager.GetOffset("DT_BaseAnimating", "m_nForceBone") + 0x1C);
             var m_bDormant = SignatureManager.GetDormantOffset();
