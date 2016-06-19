@@ -66,9 +66,16 @@ namespace HumanAim.CSGO
             return MemorySystem.MemoryScanner.GetStructure<Vector3D>(vecData);
         }
 
-        public float GetViewOffset()
+        public Vector3D GetViewOffset()
         {
-            return BitConverter.ToSingle(readData, HumanAim.NetVars["m_vecViewOffset[2]"]);
+            byte[] vecData = new byte[12];
+            Buffer.BlockCopy(readData, HumanAim.NetVars["m_vecViewOffset[0]"], vecData, 0, 12);
+            return MemorySystem.MemoryScanner.GetStructure<Vector3D>(vecData);
+        }
+
+        public Vector3D GetEyePos()
+        {
+            return GetPosition() + GetViewOffset();
         }
 
         public bool IsDormant()
@@ -85,11 +92,6 @@ namespace HumanAim.CSGO
         {
             var size = Marshal.SizeOf(typeof(BaseBone));
             return HumanAim.Memory.Read<BaseBone>(GetBoneMatrix() + (size * boneId)).ToVector3D();
-        }
-
-        public Vector3D GetViewAngle()
-        {
-            return EngineClient.ViewAngle;
         }
     }
 }

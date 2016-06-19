@@ -40,15 +40,15 @@ namespace HumanAim
                     continue;
 
                 var bone = closestPlayer.GetBonesPos(6);
-                var calculatedBone = CalculateAngle(localPlayer.GetPosition(), bone);
-                EngineClient.ViewAngle = calculatedBone;
+                var calculatedBone = CalculateAngle(localPlayer.GetEyePos(), bone);
+                EngineClient.ViewAngles = calculatedBone;
             }
         }
 
         public static Vector3D CalculateAngle(Vector3D src, Vector3D dst, bool usePunch = true)
         {
             var localPlayer = BaseClient.LocalPlayer;
-            var delta = new Vector3D { X = (src.X - dst.X), Y = (src.Y - dst.Y), Z = (src.Z - (dst.Z - localPlayer.GetViewOffset())) };
+            var delta = new Vector3D { X = (src.X - dst.X), Y = (src.Y - dst.Y), Z = (src.Z - dst.Z) };
             var hyp = (float)System.Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
             var angles = new Vector3D();
 
@@ -137,7 +137,7 @@ namespace HumanAim
             HumanAim.NetVars.Add("m_vecOrigin", NetvarManager.GetOffset("DT_BasePlayer", "m_vecOrigin"));
             HumanAim.NetVars.Add("m_iHealth", NetvarManager.GetOffset("DT_BasePlayer", "m_iHealth"));
             HumanAim.NetVars.Add("m_iTeamNum", NetvarManager.GetOffset("DT_BasePlayer", "m_iTeamNum"));
-            HumanAim.NetVars.Add("m_vecViewOffset[2]", NetvarManager.GetOffset("DT_BasePlayer", "m_vecViewOffset[2]"));
+            HumanAim.NetVars.Add("m_vecViewOffset[0]", NetvarManager.GetOffset("DT_BasePlayer", "m_vecViewOffset[0]"));
             HumanAim.NetVars.Add("m_dwIndex", 0x64);
             HumanAim.NetVars.Add("m_dwBoneMatrix", NetvarManager.GetOffset("DT_BaseAnimating", "m_nForceBone") + 0x1C);
             var m_bDormant = SignatureManager.GetDormantOffset();

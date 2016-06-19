@@ -69,7 +69,7 @@ namespace HumanAim.CSGO
             }
         }
 
-        public static Vector3D ViewAngle
+        public static Vector3D ViewAngles
         {
             get
             {
