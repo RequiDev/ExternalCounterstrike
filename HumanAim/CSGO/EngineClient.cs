@@ -64,7 +64,8 @@ namespace HumanAim.CSGO
                 {
                     localIndex = SignatureManager.GetLocalIndex();
                 }
-                return localIndex;
+                var index = HumanAim.Memory.Read<int>(ClientState + localIndex);
+                return index;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using HumanAim.CommandSystem;
 using HumanAim.ConsoleSystem;
+using HumanAim.CSGO;
 using HumanAim.MemorySystem;
 using HumanAim.ThreadingSystem;
 using System.Collections.Generic;
@@ -16,7 +17,28 @@ namespace HumanAim
             CommandHandler.Setup();
             ThreadManager.Add(new ThreadFunction("CommandHandler", CommandHandler.Worker));
             ThreadManager.Add(new ThreadFunction("AttachToGame", AttachToGame));
+            ThreadManager.Add(new ThreadFunction("Example", Example));
             ThreadManager.Run("AttachToGame");
+        }
+
+        private static void Example()
+        {
+            while(HumanAim.IsAttached)
+            {
+                Thread.Sleep(1000);
+                if (EngineClient.IsInMenu) continue;
+                Console.Clear();
+                EngineClient.ClearCache();
+                BaseClient.ClearCache();
+                BaseClient.Update();
+                foreach(var ply in BaseClient.PlayerList)
+                {
+                    ply.Update();
+                    Console.WriteNotification($"Player with Id: {ply.GetIndex()}");
+                }
+
+                Console.WriteNotification($"My localplayer is: {EngineClient.LocalPlayerIndex}");
+            }
         }
 
         private static void AttachToGame()
@@ -77,6 +99,7 @@ namespace HumanAim
             Console.WriteNotification("\n  Found and attached to it!\n");
             Console.WriteCommandLine();
             ThreadManager.Run("CommandHandler");
+            ThreadManager.Run("Example");
         }
     }
 }

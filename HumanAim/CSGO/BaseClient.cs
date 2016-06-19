@@ -8,7 +8,30 @@ namespace HumanAim.CSGO
 {
     internal class BaseClient
     {
+        private static object lockObj = new object();
         private static List<BaseEntity> playerList;
+        public static void Update()
+        {
+            lock(lockObj)
+            {
+                playerList = new List<BaseEntity>();
+                for(int i = 0; i < 64/*change to maxplayers*/; i++)
+                {
+                    var entityAddress = HumanAim.ClientDll.BaseAddress.ToInt32() + 0x04A4BA64 + (i * 0x10);
+                    var entity = HumanAim.Memory.Read<int>(entityAddress);
+
+                    if (entity == 0) continue;
+
+                    playerList.Add(new BaseEntity(entity));
+                }
+            }
+        }
+
+        public static void ClearCache()
+        {
+            playerList = new List<BaseEntity>();
+        }
+
         public static List<BaseEntity> PlayerList
         {
             get
@@ -21,7 +44,7 @@ namespace HumanAim.CSGO
         {
             get
             {
-                return playerList.FirstOrDefault(player => player.GetId() == EngineClient.LocalPlayerIndex);
+                return playerList.FirstOrDefault(player => player.GetIndex() == (EngineClient.LocalPlayerIndex));
             }
         }
     }

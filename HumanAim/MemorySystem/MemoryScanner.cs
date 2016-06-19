@@ -56,9 +56,9 @@ namespace HumanAim.MemorySystem
             return str;
         }
 
-        private static T GetStructure<T>(byte[] address)
+        public static T GetStructure<T>(byte[] bytes)
         {
-            var handle = GCHandle.Alloc(address, GCHandleType.Pinned);
+            var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             var structure = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
             handle.Free();
             return structure;

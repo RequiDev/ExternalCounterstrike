@@ -2,6 +2,7 @@
 using System.Linq;
 using System;
 using HumanAim.CSGO.Structs;
+using System.Runtime.InteropServices;
 
 namespace HumanAim.CSGO
 {
@@ -47,7 +48,7 @@ namespace HumanAim.CSGO
             return (Team)BitConverter.ToInt32(readData, HumanAim.NetVars["m_iTeamNum"]);
         }
 
-        public int GetId()
+        public int GetIndex()
         {
             return BitConverter.ToInt32(readData, HumanAim.NetVars["m_dwIndex"]);
         }
@@ -60,6 +61,12 @@ namespace HumanAim.CSGO
         public int GetBoneMatrix()
         {
             return BitConverter.ToInt32(readData, HumanAim.NetVars["m_dwBoneMatrix"]);
+        }
+
+        public Vector3D GetBonesPos(int boneId)
+        {
+            var size = Marshal.SizeOf(typeof(BaseBone));
+            return HumanAim.Memory.Read<BaseBone>(GetBoneMatrix() + (size * boneId)).ToVector3D();
         }
 
         public Vector3D GetViewAngle()
