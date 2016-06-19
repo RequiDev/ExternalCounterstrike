@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 
 namespace ExternalCounterstrike.CSGO
 {
-    internal class BaseEntity
+    internal class BasePlayer
     {
         private byte[] readData;
         private int address;
 
-        public BaseEntity(int address)
+        public BasePlayer(int address)
         {
             this.address = address;
         }

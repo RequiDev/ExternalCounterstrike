@@ -9,19 +9,19 @@ namespace ExternalCounterstrike.CSGO
     internal static class BaseClient
     {
         private static object lockObj = new object();
-        private static List<BaseEntity> playerList;
+        private static List<BasePlayer> playerList;
         public static void Update()
         {
             lock(lockObj)
             {
-                playerList = new List<BaseEntity>();
+                playerList = new List<BasePlayer>();
                 for(int i = 0; i < 64/*change to maxplayers later*/; i++)
                 {
                     var entityAddress = ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + 0x04A4BA64/*sigscan this and maybe change reading method*/ + (i * 0x10);
                     var entity = ExternalCounterstrike.Memory.Read<int>(entityAddress);
 
                     if (entity == 0) continue;
-                    var player = new BaseEntity(entity);
+                    var player = new BasePlayer(entity);
                     player.Update();
                     playerList.Add(player);
                 }
@@ -30,10 +30,10 @@ namespace ExternalCounterstrike.CSGO
 
         public static void ClearCache()
         {
-            playerList = new List<BaseEntity>();
+            playerList = new List<BasePlayer>();
         }
 
-        public static List<BaseEntity> PlayerList
+        public static List<BasePlayer> PlayerList
         {
             get
             {
@@ -41,7 +41,7 @@ namespace ExternalCounterstrike.CSGO
             }
         }
 
-        public static BaseEntity LocalPlayer
+        public static BasePlayer LocalPlayer
         {
             get
             {

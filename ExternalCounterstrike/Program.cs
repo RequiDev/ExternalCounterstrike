@@ -66,13 +66,13 @@ namespace ExternalCounterstrike
             return angles;
         }
 
-        private static BaseEntity GetClosestPlayer()
+        private static BasePlayer GetClosestPlayer()
         {
             var fov = CommandHandler.GetParameter("aimbot", "fov").Value.ToInt32();
             var radius = fov * (1080 / 90);
             var pointCrosshair = new Vector2D(960, 540);
 
-            BaseEntity result = null;
+            BasePlayer result = null;
             var localPlayer = BaseClient.LocalPlayer;
             float maxDistance = float.MaxValue;
 
