@@ -17,7 +17,7 @@ namespace ExternalCounterstrike.CSGO
                 playerList = new List<BaseEntity>();
                 for(int i = 0; i < 64/*change to maxplayers later*/; i++)
                 {
-                    var entityAddress = ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + 0x04A4BA64 + (i * 0x10);
+                    var entityAddress = ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + 0x04A4BA64/*sigscan this and maybe change reading method*/ + (i * 0x10);
                     var entity = ExternalCounterstrike.Memory.Read<int>(entityAddress);
 
                     if (entity == 0) continue;
