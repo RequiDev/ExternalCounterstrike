@@ -16,7 +16,7 @@
             }
         }
 
-        private static string _waterMark = "ExternalCounterstrike v0.1";
+        private static string _waterMark = "ExternalCounterstrike v0.1 by Requi";
         public static string WaterMark
         {
             get
@@ -448,8 +448,7 @@
         public static void WriteWatermark()
         {
             Console.Clear();
-            Console.SetCursorPosition((Console.WindowWidth / 2) - WaterMark.Length, 0);
-            Console.WriteLine(WaterMark + " by Requi");
+            Console.WriteLine(string.Format("{0," + ((Console.WindowWidth / 2) + (WaterMark.Length / 2)) + "}", WaterMark));
             Console.Write("\n\n\n");
         }
         #endregion
