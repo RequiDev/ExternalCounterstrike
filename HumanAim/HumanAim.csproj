@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,7 +55,10 @@
     <Compile Include="CSGO\BaseEntity.cs" />
     <Compile Include="CSGO\Enum\Team.cs" />
     <Compile Include="HumanAim.cs" />
-    <Compile Include="MemorySystem\MemoryManager.cs" />
+    <Compile Include="MemorySystem\MemoryScanner.cs" />
+    <Compile Include="MemorySystem\NetvarManager.cs" />
+    <Compile Include="MemorySystem\SignatureManager.cs" />
+    <Compile Include="MemorySystem\SignatureScanner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadingSystem\ThreadFunction.cs" />
@@ -62,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="app.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,5 @@
 ﻿using HumanAim.CSGO.Enum;
+using System.Linq;
 using System;
 
 namespace HumanAim.CSGO
@@ -15,7 +16,7 @@ namespace HumanAim.CSGO
 
         public void Update()
         {
-            readData = null; // Memory.ReadMemory(address, 0x3150);
+            readData = HumanAim.Memory.ReadMemory(address, HumanAim.NetVars.Values.Max()); // Memory.ReadMemory(address, 0x3150);
         }
 
         public int Address
@@ -32,12 +33,12 @@ namespace HumanAim.CSGO
 
         public int GetHealth()
         {
-            return BitConverter.ToInt32(readData, 0xFC);
+            return BitConverter.ToInt32(readData, HumanAim.NetVars["m_iHealth"]);
         }
 
         public Team GetTeam()
         {
-            return (Team)BitConverter.ToInt32(readData, 0xF0);
+            return (Team)BitConverter.ToInt32(readData, HumanAim.NetVars["m_iTeamNum"]);
         }
     }
 }

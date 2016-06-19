@@ -1,37 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace HumanAim.MemorySystem
 {
-    internal class MemoryManager
+    internal class MemoryScanner
     {
-        private int _processId;
-        private IntPtr _handle;
-        public IntPtr ProcessHandle
+        private static Process _process;
+        public MemoryScanner(Process process)
         {
-            get
-            {
-                if (_handle == IntPtr.Zero)
-                {
-                    _handle = OpenProcess(PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_WM_READ, false, _processId);
-                }
-                return _handle;
-            }
+            _process = process;
         }
-        public MemoryManager(Process process)
-        {
-            _processId = process.Id;
-        }
-
-        ~MemoryManager()
-        {
-            CloseHandle(ProcessHandle);
-        }
+        
         public T Read<T>(int address) where T : struct
         {
             var size = Marshal.SizeOf(typeof(T));
@@ -42,7 +24,7 @@ namespace HumanAim.MemorySystem
         public byte[] ReadMemory(int address, int length)
         {
             var numArray = new byte[length];
-            ReadProcessMemory(ProcessHandle, address, numArray, (uint)numArray.Length, 0);
+            ReadProcessMemory(_process.Handle, address, numArray, numArray.Length, 0);
             return numArray;
         }
 
@@ -60,7 +42,18 @@ namespace HumanAim.MemorySystem
 
         public void WriteMemory(int mAddress, byte[] pBytes)
         {
-            WriteProcessMemory(ProcessHandle, (uint)mAddress, pBytes, (uint)pBytes.Length, 0);
+            WriteProcessMemory(_process.Handle, (uint)mAddress, pBytes, (uint)pBytes.Length, 0);
+        }
+
+        public string ReadString(int address, bool unicode = false)
+        {
+            var encoding = unicode ? Encoding.UTF8 : Encoding.Default;
+            var numArray = ReadMemory(address, 255);
+            var str = encoding.GetString(numArray);
+
+            if (str.Contains('\0'))
+                str = str.Substring(0, str.IndexOf('\0'));
+            return str;
         }
 
         private static T GetStructure<T>(byte[] address)
@@ -81,7 +74,7 @@ namespace HumanAim.MemorySystem
         [DllImport("kernel32.dll")]
         static extern int CloseHandle(IntPtr hObject);
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern Int32 ReadProcessMemory(IntPtr hProcess, int lpBaseAddress, [In, Out] byte[] lpBuffer, UInt32 dwSize, int lpNumberOfBytesRead);
+        static extern int ReadProcessMemory(IntPtr hProcess, int lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, int lpNumberOfBytesRead);
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool WriteProcessMemory(IntPtr hProcess, UInt32 lpBaseAddress, byte[] lpBuffer, UInt32 dwSize, int lpNumberOfBytesWritten);
         #endregion

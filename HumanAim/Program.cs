@@ -4,6 +4,7 @@ using HumanAim.MemorySystem;
 using HumanAim.ThreadingSystem;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace HumanAim
 {
@@ -13,18 +14,19 @@ namespace HumanAim
         {
             CommandHandler.Setup();
             ThreadManager.Add(new ThreadFunction("CommandHandler", CommandHandler.Worker));
-            AttachToCSGO();
-            ThreadManager.Run("CommandHandler");
+            ThreadManager.Add(new ThreadFunction("AttachToGame", AttachToGame));
+            ThreadManager.Run("AttachToGame");
         }
 
-        private static void AttachToCSGO()
+        private static void AttachToGame()
         {
-            Console.WriteNotification("\n  Looking for Counter-Strike Global Offensive...");
+            Console.WriteNotification($"\n  Looking for {HumanAim.GameName}...");
             while (!HumanAim.IsAttached)
             {
+                Thread.Sleep(100);
                 try
                 {
-                    HumanAim.Process = Process.GetProcessesByName("csgo").FirstOrDefault(p => p.Threads.Count > 0);
+                    HumanAim.Process = Process.GetProcessesByName(HumanAim.ProcessName).FirstOrDefault(p => p.Threads.Count > 0);
                     if (HumanAim.Process == null || !Utils.IsModuleLoaded(HumanAim.Process, "client.dll") || !Utils.IsModuleLoaded(HumanAim.Process, "engine.dll")) continue;
                 }
                 catch
@@ -34,14 +36,17 @@ namespace HumanAim
 
                 while (HumanAim.ClientDll == null)
                 {
+                    Thread.Sleep(100);
                     HumanAim.ClientDll = Utils.GetModuleHandle(HumanAim.Process, "client.dll");
                 }
 
                 while (HumanAim.EngineDll == null)
                 {
+                    Thread.Sleep(100);
                     HumanAim.EngineDll = Utils.GetModuleHandle(HumanAim.Process, "engine.dll");
                 }
-                HumanAim.Memory = new MemoryManager(HumanAim.Process);
+                HumanAim.Memory = new MemoryScanner(HumanAim.Process);
+                HumanAim.SigScanner = new SignatureScanner(HumanAim.Process);
                 HumanAim.IsAttached = true;
             }
             Console.WriteLine("\n  Modules:");
@@ -52,10 +57,16 @@ namespace HumanAim
             Console.WriteOffset("DT_BaseEntity", 888888);
 
             Console.WriteLine("\n  NetVars:");
-            Console.WriteOffset("m_iHealth", 88);
+            HumanAim.NetVars = new System.Collections.Generic.Dictionary<string, int>();
+            HumanAim.NetVars.Add("m_iHealth", NetvarManager.GetOffset("DT_BasePlayer", "m_iHealth"));
+            HumanAim.NetVars.Add("m_iTeamNum", NetvarManager.GetOffset("DT_BasePlayer", "m_iTeamNum"));
+            HumanAim.NetVars.Add("m_aimPunchAngle", NetvarManager.GetOffset("DT_BasePlayer", "m_Local") + NetvarManager.GetOffset("DT_BasePlayer", "m_aimPunchAngle"));
+            Console.WriteOffset("m_iHealth", HumanAim.NetVars["m_iHealth"]);
+            Console.WriteOffset("m_numHighest", HumanAim.NetVars.Values.Max());
 
             Console.WriteNotification("\n  Found and attached to it!\n");
             Console.WriteCommandLine();
+            ThreadManager.Run("CommandHandler");
         }
     }
 }

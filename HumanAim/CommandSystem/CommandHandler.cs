@@ -9,8 +9,9 @@ namespace HumanAim.CommandSystem
         public static List<Command> Commands = new List<Command>();
         public static void Worker()
         {
-            while (true)
+            while (HumanAim.IsAttached)
             {
+                HumanAim.IsAttached = !HumanAim.Process.HasExited;
                 var fullCommand = Console.ReadLine();
                 var commandArray = fullCommand.ToLower().Split(' ');
                 var command = commandArray[0];
