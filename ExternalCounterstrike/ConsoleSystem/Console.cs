@@ -16,7 +16,7 @@
             }
         }
 
-        private static string _waterMark = "HumanAim v0.1";
+        private static string _waterMark = "ExternalCounterstrike v0.1";
         public static string WaterMark
         {
             get
