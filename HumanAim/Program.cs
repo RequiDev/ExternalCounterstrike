@@ -2,6 +2,7 @@
 using HumanAim.ConsoleSystem;
 using HumanAim.MemorySystem;
 using HumanAim.ThreadingSystem;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -57,11 +58,20 @@ namespace HumanAim
             Console.WriteOffset("DT_BaseEntity", 888888);
 
             Console.WriteLine("\n  NetVars:");
-            HumanAim.NetVars = new System.Collections.Generic.Dictionary<string, int>();
+            HumanAim.NetVars = new SortedDictionary<string, int>();
+            HumanAim.NetVars.Add("m_aimPunchAngle", NetvarManager.GetOffset("DT_BasePlayer", "m_Local") + NetvarManager.GetOffset("DT_BasePlayer", "m_aimPunchAngle"));
             HumanAim.NetVars.Add("m_iHealth", NetvarManager.GetOffset("DT_BasePlayer", "m_iHealth"));
             HumanAim.NetVars.Add("m_iTeamNum", NetvarManager.GetOffset("DT_BasePlayer", "m_iTeamNum"));
-            HumanAim.NetVars.Add("m_aimPunchAngle", NetvarManager.GetOffset("DT_BasePlayer", "m_Local") + NetvarManager.GetOffset("DT_BasePlayer", "m_aimPunchAngle"));
-            Console.WriteOffset("m_iHealth", HumanAim.NetVars["m_iHealth"]);
+            HumanAim.NetVars.Add("m_dwIndex", 0x64);
+            HumanAim.NetVars.Add("m_dwBoneMatrix", NetvarManager.GetOffset("DT_BaseAnimating", "m_nForceBone") + 0x1C);
+            var m_bDormant = SignatureManager.GetDormantOffset();
+            HumanAim.NetVars.Add("m_bDormant", m_bDormant);
+
+            var sortedDict = from entry in HumanAim.NetVars orderby entry.Value ascending select entry;
+            foreach (var netvar in sortedDict)
+            {
+                Console.WriteOffset(netvar.Key, netvar.Value);
+            }
             Console.WriteOffset("m_numHighest", HumanAim.NetVars.Values.Max());
 
             Console.WriteNotification("\n  Found and attached to it!\n");

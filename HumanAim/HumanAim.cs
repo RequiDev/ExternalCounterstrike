@@ -13,6 +13,6 @@ namespace HumanAim
         public static ProcessModule EngineDll { get; set; }
         public static MemorySystem.MemoryScanner Memory { get; set; }
         public static MemorySystem.SignatureScanner SigScanner { get; set; }
-        public static Dictionary<string, int> NetVars { get; set; }
+        public static SortedDictionary<string, int> NetVars { get; set; }
     }
 }
