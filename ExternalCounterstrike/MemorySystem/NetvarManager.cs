@@ -185,7 +185,7 @@
         }
         private static int GetTable(string wantedTable)
         {
-            int clientClass = (ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + ClientClassesHead);
+            int clientClass = ClientClassesHead;
             int current = clientClass;
 
             while (true)

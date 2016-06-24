@@ -78,7 +78,6 @@ namespace ExternalCounterstrike.MemorySystem
             address = FindAddress(pattern, 0, "xxxxxxxxxxxxxxx", ExternalCounterstrike.ClientDll);
             int address1 = FindAddress(BitConverter.GetBytes(address), 0x2B, "xxxx", ExternalCounterstrike.ClientDll);
             result = ExternalCounterstrike.Memory.Read<int>(address1);
-            result -= ExternalCounterstrike.ClientDll.BaseAddress.ToInt32();
             return result;
         }
 

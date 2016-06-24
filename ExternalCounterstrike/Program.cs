@@ -28,11 +28,12 @@ namespace ExternalCounterstrike
             while(ExternalCounterstrike.IsAttached)
             {
                 Thread.Sleep(1);
+                ExternalCounterstrike.IsAttached = !ExternalCounterstrike.Process.HasExited;
                 if (EngineClient.IsInMenu) continue;
                 EngineClient.ClearCache();
-                BaseClient.ClearCache();
-                BaseClient.Update();
-                var localPlayer = BaseClient.LocalPlayer;
+                
+                EntityList.Update();
+                var localPlayer = EntityList.GetLocalPlayer();
                 if (localPlayer == null)
                     continue;
 
@@ -40,7 +41,7 @@ namespace ExternalCounterstrike
                 if (closestPlayer == null)
                     continue;
 
-                var bone = closestPlayer.GetBonesPos(6);
+                var bone = closestPlayer.GetBonesPos(CommandHandler.GetParameter("aimbot", "bone").Value.ToInt32());
                 var calculatedBone = CalculateAngle(localPlayer.GetEyePos(), bone);
                 EngineClient.ViewAngles = calculatedBone;
             }
@@ -48,7 +49,7 @@ namespace ExternalCounterstrike
 
         public static Vector3D CalculateAngle(Vector3D src, Vector3D dst, bool usePunch = true)
         {
-            var localPlayer = BaseClient.LocalPlayer;
+            var localPlayer = EntityList.GetLocalPlayer();
             var delta = new Vector3D { X = (src.X - dst.X), Y = (src.Y - dst.Y), Z = (src.Z - dst.Z) };
             var hyp = (float)System.Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
             var angles = new Vector3D();
@@ -73,10 +74,10 @@ namespace ExternalCounterstrike
             var pointCrosshair = new Vector2D(960, 540);
 
             BasePlayer result = null;
-            var localPlayer = BaseClient.LocalPlayer;
+            var localPlayer = EntityList.GetLocalPlayer();
             float maxDistance = float.MaxValue;
 
-            foreach(var player in BaseClient.PlayerList)
+            foreach(var player in EntityList.Players)
             {
                 if (player == localPlayer) continue;
                 if (player.GetTeam() == localPlayer.GetTeam()) continue;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ExternalCounterstrike.CSGO.Structs;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ExternalCounterstrike

@@ -11,7 +11,6 @@ namespace ExternalCounterstrike.CommandSystem
         {
             while (ExternalCounterstrike.IsAttached)
             {
-                ExternalCounterstrike.IsAttached = !ExternalCounterstrike.Process.HasExited;
                 var fullCommand = Console.ReadLine();
                 var commandArray = fullCommand.ToLower().Split(' ');
                 var command = commandArray[0];
@@ -28,13 +27,14 @@ namespace ExternalCounterstrike.CommandSystem
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteWatermark();
             Commands.Add(new Command("aimbot", "Auto. aims for you by pressing the set key when the enemy is in the set fov."));
-            AddParameter("aimbot", "key", "1");
-            AddParameter("aimbot", "fov", "1");
+            AddParameter("aimbot", "key", "1", "Key for aimbot activation");
+            AddParameter("aimbot", "fov", "1", "Field of view of the aimbot");
+            AddParameter("aimbot", "bone", "6", "Bone to aim at");
         }
 
-        private static void AddParameter(string command, string parameter, string defaultValue)
+        private static void AddParameter(string command, string parameter, string defaultValue, string desc = "This is a basic parameter")
         {
-            GetCommand(command).Parameters.Add(new CommandParameter(parameter, new CommandParameterValue(defaultValue)));
+            GetCommand(command).Parameters.Add(new CommandParameter(parameter, new CommandParameterValue(defaultValue), desc));
         }
 
         private static void HandleCommand(string command, string parameter, string value)
@@ -47,7 +47,7 @@ namespace ExternalCounterstrike.CommandSystem
             }
             if (parameter == "")
             {
-                Console.WriteNotification($"  - {cmd.Name} ({cmd.Description})");
+                Console.WriteNotification($"  - {cmd.Name} ({cmd.Description})\n");
                 return;
             }
             var param = GetParameter(command, parameter);
@@ -58,7 +58,7 @@ namespace ExternalCounterstrike.CommandSystem
             }
             if(value == "")
             {
-                Console.WriteNotification($"Value of '{command} {parameter}' is {GetParameter(command, parameter).Value}");
+                Console.WriteNotification($"  - {cmd.Name} {param.Name} ({param.Description})\n    Current value of '{command} {parameter}' is {GetParameter(command, parameter).Value}\n");
                 return;
             }
             if (!param.IsFunction)

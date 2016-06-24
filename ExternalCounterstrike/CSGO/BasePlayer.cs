@@ -9,6 +9,7 @@ namespace ExternalCounterstrike.CSGO
     internal class BasePlayer
     {
         private byte[] readData;
+        private BaseBone[] cachedBones;
         private int address;
 
         public BasePlayer(int address)
@@ -23,7 +24,8 @@ namespace ExternalCounterstrike.CSGO
 
         public void Update()
         {
-            readData = ExternalCounterstrike.Memory.ReadMemory(address, ExternalCounterstrike.NetVars.Values.Max() + 12); // Memory.ReadMemory(address, 0x3150);
+            cachedBones = null;
+            readData = ExternalCounterstrike.Memory.ReadMemory(address, ExternalCounterstrike.NetVars.Values.Max() + Marshal.SizeOf(typeof(Vector3D)));
         }
 
         public int Address
@@ -83,15 +85,17 @@ namespace ExternalCounterstrike.CSGO
             return BitConverter.ToBoolean(readData, ExternalCounterstrike.NetVars["m_bDormant"]);
         }
 
-        public int GetBoneMatrix()
+        public BaseBone[] GetBoneMatrix()
         {
-            return BitConverter.ToInt32(readData, ExternalCounterstrike.NetVars["m_dwBoneMatrix"]);
+            var boneMatrix = BitConverter.ToInt32(readData, ExternalCounterstrike.NetVars["m_dwBoneMatrix"]);
+            if(cachedBones == null)
+                cachedBones = ExternalCounterstrike.Memory.ReadArray<BaseBone>(boneMatrix, 128);
+            return cachedBones;
         }
 
         public Vector3D GetBonesPos(int boneId)
         {
-            var size = Marshal.SizeOf(typeof(BaseBone));
-            return ExternalCounterstrike.Memory.Read<BaseBone>(GetBoneMatrix() + (size * boneId)).ToVector3D();
+            return GetBoneMatrix()[boneId].ToVector3D();
         }
     }
 }

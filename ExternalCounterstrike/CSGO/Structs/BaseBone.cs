@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExternalCounterstrike.CSGO.Structs
+﻿namespace ExternalCounterstrike.CSGO.Structs
 {
     internal struct BaseBone
     {
-        public float M11;
-        public float M12;
-        public float M13;
+        public float pad01;
+        public float pad02;
+        public float pad03;
         //private fixed byte skip1 [12];
         public float X;
 
-        public float M21;
-        public float M22;
-        public float M23;
+        public float pad04;
+        public float pad05;
+        public float pad06;
         //private fixed byte skip2[12];
         public float Y;
 
-        public float M31;
-        public float M32;
-        public float M33;
+        public float pad07;
+        public float pad08;
+        public float pad09;
         //private fixed byte skip3[12];
         public float Z;
 

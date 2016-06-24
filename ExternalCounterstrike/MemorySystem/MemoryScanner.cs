@@ -13,12 +13,25 @@ namespace ExternalCounterstrike.MemorySystem
         {
             _process = process;
         }
-        
+
         public T Read<T>(int address) where T : struct
         {
             var size = Marshal.SizeOf(typeof(T));
             var data = ReadMemory(address, size);
             return GetStructure<T>(data);
+        }
+
+        public T[] ReadArray<T>(int address, int length) where T : struct
+        {
+            byte[] data;
+            int size = Marshal.SizeOf(typeof(T));
+
+            data = ReadMemory(address, size * length);
+            T[] result = new T[length];
+            for (int i = 0; i < length; i++)
+                result[i] = GetStructure<T>(data, i * size);
+
+            return result;
         }
 
         public byte[] ReadMemory(int address, int length)
@@ -62,6 +75,14 @@ namespace ExternalCounterstrike.MemorySystem
             var structure = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
             handle.Free();
             return structure;
+        }
+
+        public static T GetStructure<T>(byte[] bytes, int index)
+        {
+            int size = Marshal.SizeOf(typeof(T));
+            byte[] tmp = new byte[size];
+            Array.Copy(bytes, index, tmp, 0, size);
+            return GetStructure<T>(tmp);
         }
 
         #region Kernel32
