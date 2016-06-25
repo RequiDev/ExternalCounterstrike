@@ -3,11 +3,13 @@ using System.Linq;
 using System;
 using ExternalCounterstrike.CSGO.Structs;
 using System.Runtime.InteropServices;
+using ExternalCounterstrike.MemorySystem;
 
 namespace ExternalCounterstrike.CSGO
 {
     internal class BasePlayer
     {
+        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
         private byte[] readData;
         private BaseBone[] cachedBones;
         private int address;
@@ -25,7 +27,7 @@ namespace ExternalCounterstrike.CSGO
         public void Update()
         {
             cachedBones = null;
-            readData = ExternalCounterstrike.Memory.ReadMemory(address, ExternalCounterstrike.NetVars.Values.Max() + Marshal.SizeOf(typeof(Vector3D)));
+            readData = Memory.ReadMemory(address, ExternalCounterstrike.NetVars.Values.Max() + Marshal.SizeOf(typeof(Vector3D)));
         }
 
         public int Address
@@ -89,7 +91,7 @@ namespace ExternalCounterstrike.CSGO
         {
             var boneMatrix = BitConverter.ToInt32(readData, ExternalCounterstrike.NetVars["m_dwBoneMatrix"]);
             if(cachedBones == null)
-                cachedBones = ExternalCounterstrike.Memory.ReadArray<BaseBone>(boneMatrix, 128);
+                cachedBones = Memory.ReadArray<BaseBone>(boneMatrix, 128);
             return cachedBones;
         }
 

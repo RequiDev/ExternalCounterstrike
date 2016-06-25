@@ -1,16 +1,12 @@
 ﻿using ExternalCounterstrike.CSGO.Structs;
 using ExternalCounterstrike.MemorySystem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ExternalCounterstrike.CSGO
 {
     internal static class EngineClient
     {
+        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
         private static int clientState;
         private static int signOnState;
         private static int viewAngle;
@@ -41,7 +37,7 @@ namespace ExternalCounterstrike.CSGO
             {
                 if (signOnState == 0)
                     signOnState = SignatureManager.GetSignOnState();
-                return ExternalCounterstrike.Memory.Read<int>(ClientState + signOnState) == 0;
+                return Memory.Read<int>(ClientState + signOnState) == 0;
             }
         }
 
@@ -51,7 +47,7 @@ namespace ExternalCounterstrike.CSGO
             {
                 if (signOnState == 0)
                     signOnState = SignatureManager.GetSignOnState();
-                var state = ExternalCounterstrike.Memory.Read<int>(ClientState + signOnState);
+                var state = Memory.Read<int>(ClientState + signOnState);
                 return state > 1 || state < 7;
             }
         }
@@ -64,7 +60,7 @@ namespace ExternalCounterstrike.CSGO
                 {
                     localIndex = SignatureManager.GetLocalIndex();
                 }
-                var index = ExternalCounterstrike.Memory.Read<int>(ClientState + localIndex);
+                var index = Memory.Read<int>(ClientState + localIndex);
                 return index;
             }
         }
@@ -76,14 +72,14 @@ namespace ExternalCounterstrike.CSGO
                 if (viewAngle == 0)
                     viewAngle = SignatureManager.GetViewAngle();
                 if(cachedViewAngle == Vector3D.Zero)
-                    cachedViewAngle = ExternalCounterstrike.Memory.Read<Vector3D>(ClientState + viewAngle);
+                    cachedViewAngle = Memory.Read<Vector3D>(ClientState + viewAngle);
                 return cachedViewAngle;
             }
             set
             {
                 if (viewAngle == 0)
                     viewAngle = SignatureManager.GetViewAngle();
-                ExternalCounterstrike.Memory.Write(ClientState + viewAngle, value);
+                Memory.Write(ClientState + viewAngle, value);
 
             }
         }

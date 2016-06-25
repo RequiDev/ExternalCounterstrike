@@ -1,14 +1,11 @@
 ﻿using ExternalCounterstrike.CSGO.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ExternalCounterstrike.MemorySystem;
 
 namespace ExternalCounterstrike.CSGO
 {
     internal static class BaseClient
     {
+        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
         private static readonly object lockObj = new object();
         private static GlobalVars globalVars;
 
@@ -23,7 +20,7 @@ namespace ExternalCounterstrike.CSGO
         {
             lock (lockObj)
             {
-                globalVars = ExternalCounterstrike.Memory.Read<GlobalVars>(ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + 0x1337);
+                globalVars = Memory.Read<GlobalVars>(ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + 0x1337);
             }
         }
     }

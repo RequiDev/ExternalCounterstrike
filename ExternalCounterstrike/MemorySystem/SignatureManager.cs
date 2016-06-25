@@ -6,12 +6,13 @@ namespace ExternalCounterstrike.MemorySystem
 {
     internal static class SignatureManager
     {
+        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
         public static int GetViewAngle()
         {
             byte[] pattern = new byte[] { 139, 21, 0, 0, 0, 0, 139, 77, 8, 139, 130, 0, 0, 0, 0, 137, 1, 139, 130, 0, 0, 0, 0, 137, 65, 4 };
             string mask = MaskFromPattern(pattern);
             int address = FindAddress(pattern, 11, mask, ExternalCounterstrike.EngineDll);
-            int result = ExternalCounterstrike.Memory.Read<int>(address);
+            int result = Memory.Read<int>(address);
             return result;
         }
 
@@ -30,8 +31,8 @@ namespace ExternalCounterstrike.MemorySystem
             int address, val1;
 
             address = FindAddress(pattern, 7, mask, ExternalCounterstrike.EngineDll);
-            val1 = ExternalCounterstrike.Memory.Read<int>(address);
-            return ExternalCounterstrike.Memory.Read<int>(val1);
+            val1 = Memory.Read<int>(address);
+            return Memory.Read<int>(val1);
         }
 
         public static int GetLocalIndex()
@@ -43,7 +44,7 @@ namespace ExternalCounterstrike.MemorySystem
 
             string mask = MaskFromPattern(pattern);
             var address = FindAddress(pattern, 2, mask, ExternalCounterstrike.EngineDll);
-            return ExternalCounterstrike.Memory.Read<int>(address);
+            return Memory.Read<int>(address);
         }
 
         public static int GetDormantOffset()
@@ -54,7 +55,7 @@ namespace ExternalCounterstrike.MemorySystem
             };
             string mask = MaskFromPattern(pattern);
             var address = FindAddress(pattern, 2, mask, ExternalCounterstrike.ClientDll);
-            return ExternalCounterstrike.Memory.Read<int>(address);
+            return Memory.Read<int>(address);
         }
 
         public static int GetSignOnState()
@@ -66,7 +67,7 @@ namespace ExternalCounterstrike.MemorySystem
             };
             string mask = MaskFromPattern(pattern);
             var address = FindAddress(pattern, 2, mask, ExternalCounterstrike.EngineDll);
-            return ExternalCounterstrike.Memory.Read<int>(address);
+            return Memory.Read<int>(address);
         }
 
         public static int GetClientClassesHead()
@@ -77,7 +78,7 @@ namespace ExternalCounterstrike.MemorySystem
 
             address = FindAddress(pattern, 0, "xxxxxxxxxxxxxxx", ExternalCounterstrike.ClientDll);
             int address1 = FindAddress(BitConverter.GetBytes(address), 0x2B, "xxxx", ExternalCounterstrike.ClientDll);
-            result = ExternalCounterstrike.Memory.Read<int>(address1);
+            result = Memory.Read<int>(address1);
             return result;
         }
 

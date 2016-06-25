@@ -4,6 +4,7 @@ namespace ExternalCounterstrike.MemorySystem
 {
     internal class SignatureScanner
     {
+        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
         #region VARIABLES
         /// <summary>
         /// m_vDumpedRegion
@@ -75,7 +76,7 @@ namespace ExternalCounterstrike.MemorySystem
                 // Create the region space to dump into.
                 this.m_vDumpedRegion = new byte[this.m_vSize];
 
-                m_vDumpedRegion = ExternalCounterstrike.Memory.ReadMemory(this.m_vAddress.ToInt32(), this.m_vSize);
+                m_vDumpedRegion = Memory.ReadMemory(this.m_vAddress.ToInt32(), this.m_vSize);
 
                 return true;
             }

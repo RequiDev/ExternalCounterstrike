@@ -3,9 +3,11 @@ using ExternalCounterstrike.ConsoleSystem;
 using ExternalCounterstrike.CSGO;
 using ExternalCounterstrike.CSGO.Structs;
 using ExternalCounterstrike.MemorySystem;
+using ExternalCounterstrike.Overlay;
 using ExternalCounterstrike.ThreadingSystem;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 
@@ -13,6 +15,8 @@ namespace ExternalCounterstrike
 {
     internal class Program
     {
+        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
+        private static OverlayWindow Overlay;
         private static void Main(string[] args)
         {
             CommandHandler.Setup();
@@ -20,6 +24,7 @@ namespace ExternalCounterstrike
             ThreadManager.Add(new ThreadFunction("CommandHandler", CommandHandler.Worker));
             ThreadManager.Add(new ThreadFunction("AttachToGame", AttachToGame));
             ThreadManager.Add(new ThreadFunction("Example", Example));
+            ThreadManager.Add(new ThreadFunction("DrawingLoop", DrawingLoop));
             ThreadManager.Run("AttachToGame");
         }
 
@@ -44,6 +49,38 @@ namespace ExternalCounterstrike
                 var bone = closestPlayer.GetBonesPos(CommandHandler.GetParameter("aimbot", "bone").Value.ToInt32());
                 var calculatedBone = CalculateAngle(localPlayer.GetEyePos(), bone);
                 EngineClient.ViewAngles = calculatedBone;
+            }
+        }
+
+        private static void DrawingLoop()
+        {
+            Overlay = new OverlayWindow(ExternalCounterstrike.Process.MainWindowHandle, false);
+            Overlay.Show();
+
+            var greenColor = Color.FromArgb(255, Color.Green);
+            var blackColor = Color.Black;
+
+            var brushGreen = Overlay.Graphics.CreateBrush(greenColor);
+            var brushBlack = Overlay.Graphics.CreateBrush(blackColor);
+            var brushWhite = Overlay.Graphics.CreateBrush(Color.White);
+
+            var font = Overlay.Graphics.CreateFont("Visitor TT2 (BRK)", 17);
+            var memes = Overlay.Graphics.CreateFont("Comic Sans MS", 500);
+            var pointCrosshair = new Vector2D(Overlay.Width / 2, Overlay.Height / 2);
+
+            while (ExternalCounterstrike.IsAttached)
+            {
+                Thread.Sleep(10);
+                // Begin scene of direct2d device to initialize drawing
+                Overlay.Graphics.BeginScene();
+                // Clear the scene so everything what have drawn is getting deleted
+                Overlay.Graphics.ClearScene();
+                // Draw text (kek)
+                Overlay.Graphics.DrawText("External Counterstrike", font, brushWhite, 10, 10);
+                Overlay.Graphics.DrawText("MEMES", memes, brushWhite, pointCrosshair.X - 900, pointCrosshair.Y - 400);
+
+                // Tell the direct2d device to end the scene and apply all drawings
+                Overlay.Graphics.EndScene();
             }
         }
 
@@ -84,7 +121,7 @@ namespace ExternalCounterstrike
                 if (player.IsDormant()) continue;
                 if (player.GetHealth() < 1) continue;
 
-                var distance = Vector3D.Distance(localPlayer.GetPosition(), player.GetBonesPos(6));
+                var distance = Vector3D.Distance(localPlayer.GetPosition(), player.GetPosition());
 
                 if(distance < maxDistance)
                 {
@@ -155,7 +192,8 @@ namespace ExternalCounterstrike
             Console.WriteNotification("\n  Found and attached to it!\n");
             Console.WriteCommandLine();
             ThreadManager.Run("CommandHandler");
-            ThreadManager.Run("Example");
+            ThreadManager.Run("DrawingLoop");
+
         }
     }
 }
