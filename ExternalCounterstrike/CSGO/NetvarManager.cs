@@ -1,4 +1,6 @@
-﻿namespace ExternalCounterstrike.MemorySystem
+﻿using ExternalCounterstrike.MemorySystem;
+
+namespace ExternalCounterstrike.CSGO
 {
     internal static class NetvarManager
     {

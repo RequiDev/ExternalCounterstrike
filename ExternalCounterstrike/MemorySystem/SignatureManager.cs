@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ExternalCounterstrike.MemorySystem
@@ -14,6 +15,16 @@ namespace ExternalCounterstrike.MemorySystem
             int address = FindAddress(pattern, 11, mask, ExternalCounterstrike.EngineDll);
             int result = Memory.Read<int>(address);
             return result;
+        }
+
+        public static int FindConvar()
+        {
+            //0x5B4A2100
+            var lib = Utils.GetModuleHandle(ExternalCounterstrike.Process, "vstdlib.dll");
+            byte[] pattern = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00 };
+            var mask = MaskFromPattern(pattern);
+            var address = FindAddress(pattern, 6, mask, lib);
+            return Memory.Read<int>(address) - lib.BaseAddress.ToInt32();
         }
 
         public static int GetClientState()
@@ -107,5 +118,6 @@ namespace ExternalCounterstrike.MemorySystem
 
             return address;
         }
+
     }
 }

@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -67,6 +68,8 @@
     <Compile Include="ConsoleSystem\ConsoleColor.cs" />
     <Compile Include="CSGO\BaseClient.cs" />
     <Compile Include="CSGO\BasePlayer.cs" />
+    <Compile Include="CSGO\ConVar.cs" />
+    <Compile Include="CSGO\ConvarManager.cs" />
     <Compile Include="CSGO\EngineClient.cs" />
     <Compile Include="CSGO\EntityList.cs" />
     <Compile Include="CSGO\Enum\Team.cs" />
@@ -76,7 +79,7 @@
     <Compile Include="CSGO\Structs\Vector3D.cs" />
     <Compile Include="ExternalCounterstrike.cs" />
     <Compile Include="MemorySystem\MemoryScanner.cs" />
-    <Compile Include="MemorySystem\NetvarManager.cs" />
+    <Compile Include="CSGO\NetvarManager.cs" />
     <Compile Include="MemorySystem\SignatureManager.cs" />
     <Compile Include="MemorySystem\SignatureScanner.cs" />
     <Compile Include="Overlay\Direct2DRenderer.cs" />

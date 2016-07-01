@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ExternalCounterstrike
@@ -30,7 +31,7 @@ namespace ExternalCounterstrike
 
         private static void Example()
         {
-            while(ExternalCounterstrike.IsAttached)
+            while (ExternalCounterstrike.IsAttached)
             {
                 Thread.Sleep(1);
                 ExternalCounterstrike.IsAttached = !ExternalCounterstrike.Process.HasExited;
@@ -167,8 +168,10 @@ namespace ExternalCounterstrike
             Console.WriteSuccess("  \tclient.dll | 0x" + ExternalCounterstrike.ClientDll.BaseAddress.ToString("X").PadLeft(8, '0') + "\t| " + Utils.ByteSizeToString(ExternalCounterstrike.ClientDll.ModuleMemorySize));
             Console.WriteSuccess("  \tengine.dll | 0x" + ExternalCounterstrike.EngineDll.BaseAddress.ToString("X").PadLeft(8, '0') + "\t|  " + Utils.ByteSizeToString(ExternalCounterstrike.EngineDll.ModuleMemorySize));
 
+            var cvarptr = SignatureManager.FindConvar();
             Console.WriteLine("\n  Offsets:");
             Console.WriteOffset("EntityBase", 0x04A4BA64);
+            Console.WriteOffset("ConCommand", cvarptr);
 
             Console.WriteLine("\n  NetVars:");
             ExternalCounterstrike.NetVars = new SortedDictionary<string, int>();
@@ -185,14 +188,17 @@ namespace ExternalCounterstrike
             var sortedDict = from entry in ExternalCounterstrike.NetVars orderby entry.Value ascending select entry;
             foreach (var netvar in sortedDict)
             {
-                Console.WriteOffset(netvar.Key, netvar.Value);
+                Console.WriteOffset(netvar.Key, netvar.Value, true);
             }
             Console.WriteOffset("m_numHighest", ExternalCounterstrike.NetVars.Values.Max());
 
             Console.WriteNotification("\n  Found and attached to it!\n");
+            var cvar = new ConvarManager(cvarptr);
+            var sv_cheats = cvar.FindFast("name");
+            Console.WriteLine($"\"{sv_cheats.GetName()}\" = \"{sv_cheats.GetString()}\"( def. \"{sv_cheats.GetDefaultValue()}\" )\t- {sv_cheats.GetDescription()}");
             Console.WriteCommandLine();
             ThreadManager.Run("CommandHandler");
-            ThreadManager.Run("DrawingLoop");
+            ThreadManager.Run("Example");
 
         }
     }

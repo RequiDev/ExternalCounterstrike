@@ -52,7 +52,10 @@ namespace ExternalCounterstrike.MemorySystem
             Marshal.FreeHGlobal(ptr);
             WriteMemory(adress, arr);
         }
-
+        public void WriteString(int mAddress, string str)
+        {
+            WriteMemory(mAddress, System.Text.Encoding.Default.GetBytes(str));
+        }
         public void WriteMemory(int mAddress, byte[] pBytes)
         {
             WriteProcessMemory(_process.Handle, (uint)mAddress, pBytes, (uint)pBytes.Length, 0);
