@@ -1,4 +1,4 @@
-﻿namespace ExternalCounterstrike.CSGO.Enum
+﻿namespace ExternalCounterstrike.CSGO.Enums
 {
     internal enum Team
     {

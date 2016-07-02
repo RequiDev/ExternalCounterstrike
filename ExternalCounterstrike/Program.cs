@@ -17,7 +17,7 @@ namespace ExternalCounterstrike
     internal class Program
     {
         private static MemoryScanner Memory => ExternalCounterstrike.Memory;
-        private static OverlayWindow Overlay;
+        private static OverlayWindow Overlay => ExternalCounterstrike.Overlay;
         private static void Main(string[] args)
         {
             CommandHandler.Setup();
@@ -31,31 +31,43 @@ namespace ExternalCounterstrike
 
         private static void Example()
         {
+            var oldAngle = new Vector3D();
             while (ExternalCounterstrike.IsAttached)
             {
                 Thread.Sleep(1);
-                ExternalCounterstrike.IsAttached = !ExternalCounterstrike.Process.HasExited;
+                if(ExternalCounterstrike.Process.HasExited)
+                {
+                    ExternalCounterstrike.IsAttached = false;
+                    System.Environment.Exit(0);
+                }
                 if (EngineClient.IsInMenu) continue;
                 EngineClient.ClearCache();
-                
+
                 EntityList.Update();
                 var localPlayer = EntityList.GetLocalPlayer();
                 if (localPlayer == null)
                     continue;
 
+                Vector3D newViewangle = EngineClient.ViewAngles + oldAngle;
                 var closestPlayer = GetClosestPlayer();
-                if (closestPlayer == null)
-                    continue;
+                if (closestPlayer != null)
+                {
+                    var bone = closestPlayer.GetBonesPos(CommandHandler.GetParameter("aimbot", "bone").Value.ToInt32());
+                    bone.Z += 1.0f;
+                    newViewangle = CalculateAngle(localPlayer.GetEyePos(), bone);
+                }
 
-                var bone = closestPlayer.GetBonesPos(CommandHandler.GetParameter("aimbot", "bone").Value.ToInt32());
-                var calculatedBone = CalculateAngle(localPlayer.GetEyePos(), bone);
-                EngineClient.ViewAngles = calculatedBone;
+                if (CommandHandler.GetParameter("misc", "norecoil").Value.ToBool())
+                {
+                    newViewangle -= localPlayer.GetPunchAngle() * 2.0f;
+                    oldAngle = localPlayer.GetPunchAngle() * 2.0f;
+                }
+                EngineClient.ViewAngles = newViewangle;
             }
         }
 
         private static void DrawingLoop()
         {
-            Overlay = new OverlayWindow(ExternalCounterstrike.Process.MainWindowHandle, false);
             Overlay.Show();
 
             var greenColor = Color.FromArgb(255, Color.Green);
@@ -85,7 +97,7 @@ namespace ExternalCounterstrike
             }
         }
 
-        public static Vector3D CalculateAngle(Vector3D src, Vector3D dst, bool usePunch = true)
+        public static Vector3D CalculateAngle(Vector3D src, Vector3D dst)
         {
             var localPlayer = EntityList.GetLocalPlayer();
             var delta = new Vector3D { X = (src.X - dst.X), Y = (src.Y - dst.Y), Z = (src.Z - dst.Z) };
@@ -99,8 +111,6 @@ namespace ExternalCounterstrike
                 Z = 0.0f
             };
 
-            if (usePunch) angles -= localPlayer.GetPunchAngle() * 2.0f;
-
             if (delta.X >= 0.0) { angles.Y += 180.0f; }
             return angles;
         }
@@ -108,19 +118,20 @@ namespace ExternalCounterstrike
         private static BasePlayer GetClosestPlayer()
         {
             var fov = CommandHandler.GetParameter("aimbot", "fov").Value.ToInt32();
-            var radius = fov * (1080 / 90);
-            var pointCrosshair = new Vector2D(960, 540);
+            var radius = fov * Overlay.Width / 90;
+            var pointCrosshair = new Vector2D(Overlay.Width / 2, Overlay.Height / 2);
 
             BasePlayer result = null;
             var localPlayer = EntityList.GetLocalPlayer();
             float maxDistance = float.MaxValue;
 
-            foreach(var player in EntityList.Players)
+            foreach (var player in EntityList.Players)
             {
                 if (player == localPlayer) continue;
                 if (player.GetTeam() == localPlayer.GetTeam()) continue;
                 if (player.IsDormant()) continue;
                 if (player.GetHealth() < 1) continue;
+                if (!EngineClient.Map.IsVisible(localPlayer.GetEyePos(), player.GetBonesPos(6))) continue;
 
                 var distance = Vector3D.Distance(localPlayer.GetPosition(), player.GetPosition());
 
@@ -162,6 +173,7 @@ namespace ExternalCounterstrike
                 }
                 ExternalCounterstrike.Memory = new MemoryScanner(ExternalCounterstrike.Process);
                 ExternalCounterstrike.SigScanner = new SignatureScanner(ExternalCounterstrike.Process);
+                ExternalCounterstrike.Overlay = new OverlayWindow(ExternalCounterstrike.Process.MainWindowHandle, false);
                 ExternalCounterstrike.IsAttached = true;
             }
             Console.WriteLine("\n  Modules:");
@@ -170,7 +182,7 @@ namespace ExternalCounterstrike
 
             var cvarptr = SignatureManager.FindConvar();
             Console.WriteLine("\n  Offsets:");
-            Console.WriteOffset("EntityBase", 0x04A4BA64);
+            Console.WriteOffset("EntityBase", 0x04A4EC04);
             Console.WriteOffset("ConCommand", cvarptr);
 
             Console.WriteLine("\n  NetVars:");
@@ -190,12 +202,9 @@ namespace ExternalCounterstrike
             {
                 Console.WriteOffset(netvar.Key, netvar.Value, true);
             }
-            Console.WriteOffset("m_numHighest", ExternalCounterstrike.NetVars.Values.Max());
+            Console.WriteOffset("m_numHighest", ExternalCounterstrike.NetVars.Values.Max() + Marshal.SizeOf(typeof(Vector3D)));
 
             Console.WriteNotification("\n  Found and attached to it!\n");
-            var cvar = new ConvarManager(cvarptr);
-            var sv_cheats = cvar.FindFast("name");
-            Console.WriteLine($"\"{sv_cheats.GetName()}\" = \"{sv_cheats.GetString()}\"( def. \"{sv_cheats.GetDefaultValue()}\" )\t- {sv_cheats.GetDescription()}");
             Console.WriteCommandLine();
             ThreadManager.Run("CommandHandler");
             ThreadManager.Run("Example");

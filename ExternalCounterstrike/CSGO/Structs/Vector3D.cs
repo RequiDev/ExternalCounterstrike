@@ -17,20 +17,17 @@ namespace ExternalCounterstrike.CSGO.Structs
             Z = z;
         }
 
-        public float Length
-        {
-            get
-            {
-                return (float)Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
-            }
-        }
-
         public static Vector3D Zero
         {
             get
             {
                 return new Vector3D();
             }
+        }
+
+        public float Length()
+        {
+            return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
         }
 
         public bool IsEmpty()
@@ -78,16 +75,20 @@ namespace ExternalCounterstrike.CSGO.Structs
             return vec3;
         }
 
-        public static Vector3D operator /(Vector3D a, float b)
+        public static Vector3D operator +(Vector3D a, float b)
         {
-            float oofl = 1.0f / b;
             var vec3 = new Vector3D
             {
-                X = a.X * oofl,
-                Y = a.Y * oofl,
-                Z = a.Z * oofl
+                X = a.X + b,
+                Y = a.Y + b,
+                Z = a.Z + b
             };
             return vec3;
+        }
+
+        public static Vector3D operator /(Vector3D value, float scale)
+        {
+            return new Vector3D(value.X / scale, value.Y / scale, value.Z / scale);
         }
 
         public static Vector3D operator *(Vector3D a, Vector3D b)

@@ -24,7 +24,7 @@ namespace ExternalCounterstrike.MemorySystem
             byte[] pattern = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00 };
             var mask = MaskFromPattern(pattern);
             var address = FindAddress(pattern, 6, mask, lib);
-            return Memory.Read<int>(address) - lib.BaseAddress.ToInt32();
+            return Memory.Read<int>(address);
         }
 
         public static int GetClientState()
@@ -58,11 +58,33 @@ namespace ExternalCounterstrike.MemorySystem
             return Memory.Read<int>(address);
         }
 
+        public static int GetGameDir()
+        {
+            byte[] pattern = new byte[]
+            {
+                0x68, 0x00, 0x00, 0x00, 0x00, 0x8D, 0x85, 0x00, 0x00, 0x00, 0x00, 0x50, 0x68, 0x00, 0x00, 0x00, 0x00, 0x68
+            };
+            string mask = MaskFromPattern(pattern);
+            var address = FindAddress(pattern, 1, mask, ExternalCounterstrike.EngineDll);
+            return Memory.Read<int>(address);
+        }
+
+        public static int GetMapName()
+        {
+            byte[] pattern = new byte[]
+            {
+                0x05, 0x00, 0x00, 0x00, 0x00, 0xC3, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0x80, 0x3D
+            };
+            string mask = MaskFromPattern(pattern);
+            var address = FindAddress(pattern, 1, mask, ExternalCounterstrike.EngineDll);
+            return Memory.Read<int>(address);
+        }
+
         public static int GetDormantOffset()
         {
             byte[] pattern = new byte[]
             {
-                0x88, 0x9E, 0x00, 0x00, 0x00, 0x00, 0xE8
+                0x88, 0x9E, 0x00, 0x00, 0x00, 0x00, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x53, 0x8D, 0x8E
             };
             string mask = MaskFromPattern(pattern);
             var address = FindAddress(pattern, 2, mask, ExternalCounterstrike.ClientDll);

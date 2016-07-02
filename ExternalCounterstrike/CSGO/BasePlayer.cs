@@ -1,4 +1,4 @@
-﻿using ExternalCounterstrike.CSGO.Enum;
+﻿using ExternalCounterstrike.CSGO.Enums;
 using System.Linq;
 using System;
 using ExternalCounterstrike.CSGO.Structs;
@@ -97,7 +97,7 @@ namespace ExternalCounterstrike.CSGO
 
         public Vector3D GetBonesPos(int boneId)
         {
-            return GetBoneMatrix()[boneId].ToVector3D();
+            return GetBoneMatrix()[boneId];
         }
     }
 }
