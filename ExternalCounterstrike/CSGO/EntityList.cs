@@ -1,4 +1,4 @@
-﻿using ExternalCounterstrike.MemorySystem;
+﻿using ExternalCounterstrike.CSGO.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,46 +7,24 @@ using System.Threading.Tasks;
 
 namespace ExternalCounterstrike.CSGO
 {
-    internal class EntityList
+    class EntityList
     {
-        private static MemoryScanner Memory => ExternalCounterstrike.Memory;
-        private static readonly object lockObj = new object();
-        private static List<BasePlayer> players;
+        public List<BasePlayer> Players;
+        public List<BaseEntity> Entities;
 
-        public static void Update()
+        public BasePlayer GetPlayerByIndex(int index)
         {
-            lock (lockObj)
-            {
-                players = new List<BasePlayer>();
-                for (int i = 0; i < 64/*BaseClient.GlobalVars.maxClients*/; i++)
-                {
-                    var entityAddress = ExternalCounterstrike.ClientDll.BaseAddress.ToInt32() + 0x04A4EC04/*sigscan this and maybe change reading method*/ + (i * 0x10);
-                    var entity = Memory.Read<int>(entityAddress);
-
-                    if (entity == 0) continue;
-                    var player = new BasePlayer(entity);
-                    player.Update();
-                    players.Add(player);
-                }
-            }
+            return Players.FirstOrDefault(player => player.GetIndex() == index);
         }
 
-        public static List<BasePlayer> Players
+        public BaseEntity GetEntityByIndex(int index)
         {
-            get
-            {
-                return players;
-            }
+            return Entities.FirstOrDefault(ent => ent.GetIndex() == index);
         }
 
-        public static BasePlayer GetPlayerByIndex(int index)
+        public BasePlayer GetLocalPlayer()
         {
-            return players.FirstOrDefault(player => player.GetIndex() == index);
-        }
-
-        public static BasePlayer GetLocalPlayer()
-        {
-            return players.FirstOrDefault(player => player.GetIndex() == (EngineClient.LocalPlayerIndex + 1));
+            return Players.FirstOrDefault(player => player.GetIndex() == (EngineClient.LocalPlayerIndex + 1));
         }
     }
 }

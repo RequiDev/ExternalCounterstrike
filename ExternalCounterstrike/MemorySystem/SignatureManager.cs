@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ExternalCounterstrike.MemorySystem
@@ -8,6 +7,7 @@ namespace ExternalCounterstrike.MemorySystem
     internal static class SignatureManager
     {
         private static MemoryScanner Memory => ExternalCounterstrike.Memory;
+
         public static int GetViewAngle()
         {
             byte[] pattern = new byte[] { 139, 21, 0, 0, 0, 0, 139, 77, 8, 139, 130, 0, 0, 0, 0, 137, 1, 139, 130, 0, 0, 0, 0, 137, 65, 4 };
@@ -17,14 +17,32 @@ namespace ExternalCounterstrike.MemorySystem
             return result;
         }
 
-        public static int FindConvar()
+        public static int GetEntityList()
         {
-            //0x5B4A2100
-            var lib = Utils.GetModuleHandle(ExternalCounterstrike.Process, "vstdlib.dll");
-            byte[] pattern = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0xB8, 0x00, 0x00, 0x00, 0x00 };
-            var mask = MaskFromPattern(pattern);
-            var address = FindAddress(pattern, 6, mask, lib);
+            int tmp1, tmp2;
+            byte[] pattern = new byte[] { 0x05, 0x00, 0x00, 0x00, 0x00, 0xC1, 0xe9, 0x00, 0x39, 0x48, 0x04 };
+            string mask = MaskFromPattern(pattern);
+            int address = FindAddress(pattern, 0, mask, ExternalCounterstrike.ClientDll);
+            tmp1 = Memory.Read<int>(address + 1);
+            tmp2 = Memory.Read<byte>(address + 7);
+            return tmp2 + tmp1;
+        }
+
+        public static int GetConvarPtr()
+        {
+            ProcessModule lib = Utils.GetModuleHandle(ExternalCounterstrike.Process, "vstdlib.dll");
+            byte[] pattern = new byte[] { 232, 0, 0, 0, 0, 184, 0, 0, 0, 0 };
+            string mask = MaskFromPattern(pattern);
+            int address = FindAddress(pattern, 6, mask, lib);
             return Memory.Read<int>(address);
+        }
+
+        public static int GetWorldToViewMatrix()
+        {
+            byte[] pattern = new byte[] { 243, 15, 111, 5, 0, 0, 0, 0, 141, 133 };
+            string mask = MaskFromPattern(pattern);
+            int address = FindAddress(pattern, 4, mask, ExternalCounterstrike.ClientDll);
+            return Memory.Read<int>(address) + 176;
         }
 
         public static int GetClientState()

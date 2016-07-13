@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExternalCounterstrike.CSGO
+namespace ExternalCounterstrike.CSGO.Models
 {
     /*
     class ConVar
@@ -38,9 +38,12 @@ namespace ExternalCounterstrike.CSGO
             _address = ptr;
         }
 
-        public int GetPointer()
+        public int Pointer
         {
-            return _address;
+            get
+            {
+                return _address;
+            }
         }
 
         public ConVar GetNext()
@@ -48,32 +51,50 @@ namespace ExternalCounterstrike.CSGO
             return new ConVar(ExternalCounterstrike.Memory.Read<int>(_address + 0x4));
         }
 
-        public bool IsRegistered()
+        public bool IsRegistered
         {
-            return ExternalCounterstrike.Memory.Read<bool>(_address + 0x8);
+            get
+            {
+                return ExternalCounterstrike.Memory.Read<bool>(_address + 0x8);
+            }
         }
 
-        public string GetName()
+        public string Name
         {
-            return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0xC));
+            get
+            {
+                return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0xC));
+            }
         }
-        public string GetDescription()
+
+        public string Description
         {
-            return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0x10));
+            get
+            {
+                return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0x10));
+            }
         }
-        public int GetFlags()
+
+        public int Flags
         {
-            return ExternalCounterstrike.Memory.Read<int>(_address + 0x14);
+            get
+            {
+                return ExternalCounterstrike.Memory.Read<int>(_address + 0x14);
+            }
         }
 
         public ConVar GetParent()
         {
             return new ConVar(ExternalCounterstrike.Memory.Read<int>(_address + 0x1C));
         }
-        public string GetDefaultValue()
+        public string DefaultValue
         {
-            return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0x20));
+            get
+            {
+                return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0x20));
+            }
         }
+
         public string GetString()
         {
             return ExternalCounterstrike.Memory.ReadString(ExternalCounterstrike.Memory.Read<int>(_address + 0x24));

@@ -26,12 +26,15 @@ namespace ExternalCounterstrike.CommandSystem
             Console.Title = Utils.RandomString(new System.Random().Next(10, 32));
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteWatermark();
+
             Commands.Add(new Command("aimbot", "Auto. aims for you by pressing the set key when the enemy is in the set fov."));
             Commands.Add(new Command("misc", "Misc options for fun etc."));
+
             AddParameter("aimbot", "key", "1", "Key for aimbot activation");
             AddParameter("aimbot", "fov", "1", "Field of view of the aimbot");
             AddParameter("aimbot", "bone", "6", "Bone to aim at");
             AddParameter("misc", "norecoil", "0", "Controls the recoil of the existing gun");
+            AddParameter("misc", "flashalpha", "255", "Max. flash alpha. Set to 0 for no flash.");
         }
 
         private static void AddParameter(string command, string parameter, string defaultValue, string desc = "This is a basic parameter")

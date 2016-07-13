@@ -484,6 +484,7 @@ namespace ExternalCounterstrike.Overlay
 
         public void DrawText(string text, int font, int brush, float x, float y, bool bufferText = true)
         {
+            
             if (bufferText)
             {
                 var bufferPos = -1;

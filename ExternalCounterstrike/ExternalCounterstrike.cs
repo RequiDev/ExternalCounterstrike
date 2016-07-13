@@ -1,4 +1,5 @@
-﻿using ExternalCounterstrike.Overlay;
+﻿using ExternalCounterstrike.CSGO;
+using ExternalCounterstrike.Overlay;
 using System.Collections.Generic;
 using System.Diagnostics;
 

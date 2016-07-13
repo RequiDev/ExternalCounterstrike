@@ -426,9 +426,9 @@
 
         public static void WriteWatermark()
         {
-            Console.Clear();
-            Console.WriteLine(string.Format("{0," + ((Console.WindowWidth / 2) + (WaterMark.Length / 2)) + "}", WaterMark));
-            Console.Write("\n\n\n");
+            Clear();
+            WriteLine(string.Format("{0," + ((WindowWidth / 2) + (WaterMark.Length / 2)) + "}", WaterMark));
+            Write("\n\n\n");
         }
         #endregion
     }

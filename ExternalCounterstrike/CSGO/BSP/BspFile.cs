@@ -54,7 +54,7 @@ namespace ExternalCounterstrike.CSGO.BSP
             {
                 Load(stream);
             }
-            Console.WriteNotification("\nLoaded " + filePath.Split('\\').Last());
+            Console.WriteSuccess("\nLoaded " + filePath.Split('\\').Last());
             Console.WriteCommandLine();
         }
         #endregion

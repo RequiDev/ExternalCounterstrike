@@ -3,20 +3,20 @@
     internal struct BaseBone
     {
         private float pad01;
-        private float pad02;
-        private float pad03;
+        private float unk02;
+        private float unk03;
         //private fixed byte skip1 [12];
         public float X;
 
-        private float pad04;
-        private float pad05;
-        private float pad06;
+        private float unk04;
+        private float unk05;
+        private float unk06;
         //private fixed byte skip2[12];
         public float Y;
 
-        private float pad07;
-        private float pad08;
-        private float pad09;
+        private float unk07;
+        private float unk08;
+        private float unk09;
         //private fixed byte skip3[12];
         public float Z;
 
